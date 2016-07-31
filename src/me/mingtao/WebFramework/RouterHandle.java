@@ -5,8 +5,12 @@ import me.mingtao.utils.Context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.ObjDoubleConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by mingtao on 7/30/16.
@@ -56,11 +60,39 @@ public class RouterHandle {
 
         if (len != len2) return null;
 
+        String reg = "<[ \\t]*(int)[ \\t]*>";
+        String reg2 = "<[ \\t]*(float)[ \\t]*>";
+        String reg3 = "<[ \\t]*(string)[ \\t]*>";
+        Pattern p = Pattern.compile(reg);
+        Pattern p2 = Pattern.compile(reg2);
+        Pattern p3 = Pattern.compile(reg3);
+
+        // put all params in it
+        ArrayList result = new ArrayList();
+
         for(int i = 0; i < len; i++) {
-            if(! url_arr[i].equals(pattern_arr[i])) {
+            if(p.matcher(pattern_arr[i]).find()) {
+                try {
+                    Integer number = new Integer(url_arr[i]);
+                    result.add(number);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else if (p2.matcher(pattern_arr[i]).find()) {
+                if(Pattern.compile("^[0-9]+\\.[0-9]+$").matcher(url_arr[i]).find()) {
+                    Float number = new Float(url_arr[i]);
+                    result.add(number);
+                } else {
+                    return null;
+                }
+            } else if(p3.matcher(pattern_arr[i]).find()) {
+                result.add(url_arr[i]);
+            } else if(! url_arr[i].equals(pattern_arr[i])) {
                 return null;
             }
         }
-        return new ArrayList();
+
+        return result;
     }
 }
