@@ -1,2 +1,2 @@
 # wheel
-A web framework write socket
+A web framework written with socket
